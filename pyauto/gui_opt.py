@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 import time
-
 import pyautogui
 
 
@@ -11,7 +10,17 @@ class GuiOpt:
     def click_icon(icon_path):
         x, y = pyautogui.locateCenterOnScreen(icon_path, confidence=0.7)
         pyautogui.moveTo(x,y)
+        time.sleep(1)
         pyautogui.click(x, y)
+        time.sleep(1)
+
+    @staticmethod
+    def double_click_icon(icon_path):
+        x, y = pyautogui.locateCenterOnScreen(icon_path, confidence=0.7)
+        pyautogui.moveTo(x, y)
+        time.sleep(1)
+        pyautogui.doubleClick(x, y)
+        time.sleep(1)
 
     @staticmethod
     def find_icon(icon_path):
@@ -37,7 +46,7 @@ class GuiOpt:
         while 1:
             if sec > max_sec:
                 print("等待超时")
-                break
+                return False
             try:
                 location = pyautogui.locateOnScreen(icon_path, confidence=0.7)
             except pyautogui.ImageNotFoundException:
@@ -48,6 +57,7 @@ class GuiOpt:
             if location is not None:
                 print("图片出现, 位置: " + str(location.left) + ", " + str(location.top))
                 break
+        return True
 
     @staticmethod
     def wait_disappear(icon_path, max_sec):
@@ -69,7 +79,7 @@ class GuiOpt:
                 break
             else:
                 time.sleep(range_sec)
-                print("wait time: " + str(sec))
+                print("wait time: " + str(sec) + " seconds")
                 sec += range_sec
 
 # GuiOpt.click_icon("jianying_icon.png")

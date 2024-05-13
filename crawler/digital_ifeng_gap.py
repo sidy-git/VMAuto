@@ -1,13 +1,12 @@
 # -*- coding: utf-8 -*-
 import os
-import re
 import urllib.request
 
 from common.global_var import GlobalVar
 from crawler_template import CrawlerBase
 
 
-class DigitalHuanqiuGap(CrawlerBase):
+class DigitaliFengGap(CrawlerBase):
     def __init__(self, src, url):
         super().__init__()
         self.set_attr(src, url)
@@ -15,19 +14,16 @@ class DigitalHuanqiuGap(CrawlerBase):
     def run(self):
         self.get_list()
         if self.soup is not None:
-            # print(self.soup)
-            news = self.soup.find("div", {"class": "csr_sketch_txt_4"}).find("div", {"class": "bd"})
+            news = self.soup.find("div", {"class": "style_news_ibc02"})
             # print(news)
-            items = news.select("div")
+            items = news.select("a")
             # 限制数量
             max_line = 10
             for li in items:
-                host = li.find("textarea", {"class": "item-cnf-host"}).text
-                addltype = li.find("textarea", {"class": "item-addltype"}).text
-                aid = li.find("textarea", {"class": "item-aid"}).text
-                url = "https://" + host + "/" + addltype + "/" + aid
-                super().addItem(self.src, li.find("textarea", {"class": "item-title"}).text, url)
-                max_line -= 1
+                # print(li)
+                if str(li).find("class=\"index_title_oqpqT\"") > 0:
+                    super().addItem(self.src, li.attrs["title"], li.attrs["href"])
+                    max_line -= 1
                 if max_line <= 0:
                     break
         else:
@@ -41,7 +37,8 @@ class DigitalHuanqiuGap(CrawlerBase):
         if self.soup is not None:
             # print(self.soup)
             # 获取文本
-            detail = self.soup.find("article").find("section")
+            detail = self.soup.find("div", {"class", "index_text_D0U1y"})
+            # print(detail)
             context = ""
             lines = detail.select("p")
             for line in lines:
@@ -55,7 +52,7 @@ class DigitalHuanqiuGap(CrawlerBase):
             imgIndex = 1
             for img in imgs:
                 if img.find("img"):
-                    pic_src = img.find("img").attrs["src"]
+                    pic_src = img.find("img").attrs["data-lazyload"]
                     if pic_src.find("?"):
                         pic_src = pic_src.split("?")[0]
                     if pic_src.find("https") < 0:
@@ -64,9 +61,9 @@ class DigitalHuanqiuGap(CrawlerBase):
                     file_extension = os.path.splitext(pic_src)[1]
                     # print(pic_src)
                     save_path = imgdir + "/" + str(index) + "-" + str(imgIndex) + file_extension
-                    imgIndex += 1
-                    urllib.request.urlretrieve(pic_src, save_path)
                     print("开始下载图片" + str(index) + "-" + str(imgIndex))
+                    urllib.request.urlretrieve(pic_src, save_path)
+                    imgIndex += 1
             # print(context)
             return context
         else:
@@ -74,7 +71,7 @@ class DigitalHuanqiuGap(CrawlerBase):
             return None
 
 
-# instance = DigitalHuanqiuGap("环球网", "https://tech.huanqiu.com/")
+# instance = DigitaliFengGap("凤凰网", "https://tech.ifeng.com/")
 # instance.run()
 # instance.printList()
-# context = instance.get_detail_dl_img("https://tech.huanqiu.com/article/4Hg9B0Aa3vw", 1)
+# instance.get_detail_dl_img("https://tech.ifeng.com/c/8ZNkdXxZrsk", 1)

@@ -1,13 +1,11 @@
 # -*- coding: utf-8 -*-
 import os
-import re
 import urllib.request
-
 from common.global_var import GlobalVar
 from crawler_template import CrawlerBase
 
 
-class DigitalHuanqiuGap(CrawlerBase):
+class DigitalGeekparkGap(CrawlerBase):
     def __init__(self, src, url):
         super().__init__()
         self.set_attr(src, url)
@@ -15,19 +13,18 @@ class DigitalHuanqiuGap(CrawlerBase):
     def run(self):
         self.get_list()
         if self.soup is not None:
-            # print(self.soup)
-            news = self.soup.find("div", {"class": "csr_sketch_txt_4"}).find("div", {"class": "bd"})
+            news = self.soup.find("div", {"class": "article-list"})
             # print(news)
-            items = news.select("div")
+            items = news.select("article")
             # 限制数量
             max_line = 10
             for li in items:
-                host = li.find("textarea", {"class": "item-cnf-host"}).text
-                addltype = li.find("textarea", {"class": "item-addltype"}).text
-                aid = li.find("textarea", {"class": "item-aid"}).text
-                url = "https://" + host + "/" + addltype + "/" + aid
-                super().addItem(self.src, li.find("textarea", {"class": "item-title"}).text, url)
-                max_line -= 1
+                # print(li)
+                if str(li).find("class=\"article-item\"") > 0:
+                    temp = li.find("a", {"data-event-category": "article-list.title"})
+                    # print(temp)
+                    super().addItem(self.src, temp.text, self.url + temp.attrs["href"])
+                    max_line -= 1
                 if max_line <= 0:
                     break
         else:
@@ -41,7 +38,8 @@ class DigitalHuanqiuGap(CrawlerBase):
         if self.soup is not None:
             # print(self.soup)
             # 获取文本
-            detail = self.soup.find("article").find("section")
+            detail = self.soup.find("div", {"class", "article-content"})
+            # print(detail)
             context = ""
             lines = detail.select("p")
             for line in lines:
@@ -51,10 +49,21 @@ class DigitalHuanqiuGap(CrawlerBase):
                     context += line.text.strip("\n")
                     # print(context)
             # 下载图片
-            imgs = detail.select("p")
             imgIndex = 1
+            # 下载首图
+            topic_img = self.soup.find("img", id="topic-cover")
+            if topic_img is not None:
+                pic_src = topic_img.attrs["src"]
+                file_extension = os.path.splitext(pic_src)[1]
+                save_path = imgdir + "/" + str(index) + "-" + str(imgIndex) + file_extension
+                print("开始下载图片" + str(index) + "-" + str(imgIndex))
+                urllib.request.urlretrieve(pic_src, save_path)
+                imgIndex += 1
+            # 下载正文图片
+            imgs = detail.select("p")
             for img in imgs:
                 if img.find("img"):
+                    # print(img)
                     pic_src = img.find("img").attrs["src"]
                     if pic_src.find("?"):
                         pic_src = pic_src.split("?")[0]
@@ -64,17 +73,15 @@ class DigitalHuanqiuGap(CrawlerBase):
                     file_extension = os.path.splitext(pic_src)[1]
                     # print(pic_src)
                     save_path = imgdir + "/" + str(index) + "-" + str(imgIndex) + file_extension
-                    imgIndex += 1
-                    urllib.request.urlretrieve(pic_src, save_path)
                     print("开始下载图片" + str(index) + "-" + str(imgIndex))
+                    urllib.request.urlretrieve(pic_src, save_path)
+                    imgIndex += 1
             # print(context)
             return context
         else:
             print('Failed to retrieve the webpage from: ', detail_url)
             return None
 
-
-# instance = DigitalHuanqiuGap("环球网", "https://tech.huanqiu.com/")
+# instance = DigitalGeekparkGap("极客公园", "https://www.geekpark.net")
 # instance.run()
 # instance.printList()
-# context = instance.get_detail_dl_img("https://tech.huanqiu.com/article/4Hg9B0Aa3vw", 1)

@@ -1,7 +1,11 @@
-import pyauto
+import datetime
 
-# 将鼠标移动到屏幕中央
-pyauto.moveTo(pyauto.size()[0] / 2, pyauto.size()[1] / 2)
+# 获取当前时间
+current_time = datetime.datetime.now()
 
-# 在屏幕中央单击鼠标左键
-pyauto.click()
+# 打印当前时间
+print(current_time)
+if current_time.hour > 12:
+    print("12点后")
+else:
+    print("12点前")

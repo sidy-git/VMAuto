@@ -25,7 +25,10 @@ class OptConfig:
         print("key:" + self.key)
 
 
-opts = [OptConfig("口语化", "https://ppwx-helpseller-gm2.jd.com/text/nlp", "Chatrhino", "请将以下内容用较为口语化的风格进行重写：")]
+opts = [
+    # OptConfig("口语化", "https://ppwx-helpseller-gm2.jd.com/text/nlp", "Chatrhino", "请将以下内容用较为口语化的风格进行重写："),
+    OptConfig("新闻稿", "https://ppwx-helpseller-gm2.jd.com/text/nlp", "Chatrhino", "请将以下内容用新闻稿的风格进行重写：")
+]
 
 
 def post_json(url, body):

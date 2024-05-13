@@ -61,3 +61,15 @@ class CrawlerBase:
         else:
             print('Failed to retrieve the webpage')
             self.soup = None
+
+    def get_detail_dl_img(self, detail_url, index):
+        print("获取信息详情, url:", detail_url)
+        response = requests.get(detail_url)
+        if response.status_code == 200:
+            # 使用 'html.parser' 解析器解析 HTML 内容
+            response.encoding = response.apparent_encoding
+            self.soup = BeautifulSoup(response.text, 'html.parser')
+            # 详情文案解析由子类实现
+        else:
+            print('Failed to retrieve the webpage')
+            self.soup = None

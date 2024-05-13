@@ -3,12 +3,14 @@
 import os
 import sys
 import time
+
+from common.common_api import CommonApi
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from common.global_var import GlobalVar
 from pyauto.gui_opt import GuiOpt
 
 # 启动剪映
-url_pre = "video/pic/"
+url_pre = "video/pic/" + CommonApi.get_os_type() + "/"
 GuiOpt.click_icon(url_pre + "jianying_icon.png")
 # GuiOpt.click_icon(url_pre + "jianying_icon2.png")
 if not GuiOpt.wait_appear(url_pre + "jianying_ziyoubianjiwenan.png", 5):
@@ -27,8 +29,12 @@ if context is not None:
     input_value = input()
     if input_value == "n" or input_value == "N":
         print("中断当前操作")
-        exit(0)
+        exit(1)
     GuiOpt.click_icon(url_pre + "jianying_icon.png")
+    # 兼容windows处理
+    if CommonApi.get_os_type() == "win":
+        GuiOpt.click_icon(url_pre + "jianying_tuwenchengpian2.png")
+
     GuiOpt.click_icon(url_pre + "jianying_shengchengshipin.png")
     GuiOpt.click_icon(url_pre + "jianying_zhinengpipei.png")
     print("视频生成中........")

@@ -12,7 +12,7 @@ def auto_run(cfg_file):
     # 启动运行
     print("config file: ",  cfg_file)
     config = configparser.ConfigParser()
-    config.read(cfg_file)
+    config.read(cfg_file, encoding="utf-8")
 
     theme = config.get('info', 'theme')
     print("主题: ", theme)
@@ -26,51 +26,17 @@ def auto_run(cfg_file):
         print("启用模式2")
         GlobalVar.add("mode", 2)
 
-    # 运行选材推荐脚本
-    print("开始收集选材......")
-    if config.has_option('scripts', "crawler"):
-        script = config.get('scripts', "crawler")
-        os.system("python3 " + script)
-    else:
-        print("收集选材脚本未找到")
-
-    print("完成选材收集")
-
-    # 开始文案生成和优化
-    print("开始文案优化......")
-    if config.has_option('scripts', "aigc"):
-        script = config.get('scripts', "aigc")
-        os.system("python3 " + script)
-    else:
-        print("文案优化脚本未找到")
-    print("完成文案优化")
-
-    # 准备图片素材
-    print("开始准备图片素材")
-    if config.has_option('scripts', "picCollect"):
-        script = config.get('scripts', "picCollect")
-        os.system("python3 " + script)
-    else:
-        print("图片素材准备脚本未找到")
-
-    # 开始生成视频
-    print("开始文图成片......")
-    if config.has_option('scripts', "jianying"):
-        script = config.get('scripts', "jianying")
-        os.system("python3 " + script)
-    else:
-        print("生成视频脚本未找到")
-    print("完成视频生成")
-
-    # 开始封面制作
-    print("开始封面制作......")
-    if config.has_option('scripts', "fengmian"):
-        script = config.get('scripts', "fengmian")
-        os.system("python3 " + script)
-    else:
-        print("生成封面脚本未找到")
-    print("完成封面生成")
-
-
-
+    # 开始脚本执行
+    scriptconfigs = config.options("scripts")
+    for option in scriptconfigs:
+        item = config.get("scripts", option).split(",")
+        script_name = item[0]
+        script_path = item[1]
+        print("开始运行" + script_name)
+        ret = os.system("python " + script_path)
+        if ret == 0:
+            print("完成" + script_name)
+        else:
+            print("执行" + script_name + "失败，返回：" + str(ret))
+            break
 

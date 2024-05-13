@@ -42,7 +42,7 @@ class DigitalIthomeGap(CrawlerBase):
             return None
 
     def get_detail_dl_img(self, detail_url, index):
-        imgdir = GlobalVar.get("imgSaveDir")
+        imgdir = GlobalVar.get("imgsavedir")
         if imgdir is None:
             print("get imgdir failed")
         super().get_detail(detail_url)

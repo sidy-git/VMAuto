@@ -4,7 +4,7 @@ import os.path
 
 
 class GlobalVar:
-    file = "output/global_var.ini"
+    file = "C:\\Users\\Administrator\\PycharmProjects\\VMAuto\\output\\global_var.ini"
     default_session = "global"
     init_flag = False
 
@@ -14,12 +14,12 @@ class GlobalVar:
     def init():
         if not GlobalVar.init_flag:
             # print("init GlobalVar ini file success")
-            GlobalVar.config.read(GlobalVar.file)
+            GlobalVar.config.read(GlobalVar.file, encoding="utf-8")
             GlobalVar.init_flag = True
 
     @staticmethod
     def close():
-        GlobalVar.config.write(open(GlobalVar.file, 'w'))
+        GlobalVar.config.write(open(GlobalVar.file, 'w', encoding="utf-8"))
         GlobalVar.init_flag = False
 
     @staticmethod
@@ -31,7 +31,7 @@ class GlobalVar:
             value = str(value)
         temp_value = value.replace(" ", "").replace("\r", "").replace("\n", "").replace("%", "%%")
         GlobalVar.config.set(GlobalVar.default_session, key, temp_value)
-        GlobalVar.config.write(open(GlobalVar.file, "w"))
+        GlobalVar.config.write(open(GlobalVar.file, "w", encoding="utf-8"))
 
     @staticmethod
     def get(key):
@@ -68,6 +68,7 @@ class GlobalVar:
 
 
 # print(GlobalVar.get("context1"))
+print(GlobalVar.get("imgsavedir"))
 # GlobalVar.clear_all("context")
 # print(GlobalVar.get("context1"))
 # GlobalVar.add_more("context", "context1")

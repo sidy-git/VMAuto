@@ -6,12 +6,14 @@ import time
 
 import pyperclip
 
+from common.common_api import CommonApi
+
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from common.global_var import GlobalVar
 from pyauto.gui_opt import GuiOpt
 
 # 启动剪映
-url_pre = "video/pic/"
+url_pre = "video/pic/" + CommonApi.get_os_type() + "/"
 GuiOpt.click_icon(url_pre + "jianying_icon.png")
 # GuiOpt.click_icon(url_pre + "jianying_icon2.png")
 GuiOpt.click_icon(url_pre + "jianying_fengmian.png")

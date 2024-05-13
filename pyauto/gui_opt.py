@@ -2,6 +2,8 @@
 import time
 import pyautogui
 
+from common.common_api import CommonApi
+
 
 # GUI 操作类
 class GuiOpt:
@@ -35,7 +37,10 @@ class GuiOpt:
 
     @staticmethod
     def paste():
-        pyautogui.hotkey('command', 'v')
+        if CommonApi.get_os_type() == "win":
+            pyautogui.hotkey('ctrl', 'v')
+        else:
+            pyautogui.hotkey('command', 'v')
 
     @staticmethod
     def wait_appear(icon_path, max_sec):

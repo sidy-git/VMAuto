@@ -1,5 +1,6 @@
 import os
 import platform
+import shutil
 
 
 class CommonApi:
@@ -15,3 +16,22 @@ class CommonApi:
                 return 'Linux'
         else:
             return 'Unknown'
+
+    @staticmethod
+    def copy_files(source_folder, destination_folder):
+        if not os.path.exists(destination_folder):
+            os.makedirs(destination_folder)
+        for filename in os.listdir(source_folder):
+            source_file = os.path.join(source_folder, filename)
+            destination_file = os.path.join(destination_folder, filename)
+            if os.path.isfile(source_file):
+                shutil.copy2(source_file, destination_folder)
+                print(f"Copied {source_file} to {destination_folder}")
+
+    @staticmethod
+    def remove_directory(directory):
+        try:
+            shutil.rmtree(directory)
+            print("目录删除成功")
+        except OSError as e:
+            print("目录删除失败：", e)

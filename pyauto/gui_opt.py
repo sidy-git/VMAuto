@@ -43,6 +43,13 @@ class GuiOpt:
             pyautogui.hotkey('command', 'v')
 
     @staticmethod
+    def select_all():
+        if CommonApi.get_os_type() == "win":
+            pyautogui.hotkey('ctrl', 'a')
+        else:
+            pyautogui.hotkey('command', 'a')
+
+    @staticmethod
     def wait_appear(icon_path, max_sec):
         # 统计频度
         range_sec = 5

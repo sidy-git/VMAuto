@@ -31,14 +31,20 @@ elif mode == "2":
 else:
     print("unknow mode: " + mode)
     exit(-1)
-
-GuiOpt.click_icon(url_pre + "jianying_dakai.png")
+if CommonApi.get_os_type() == "mac":
+    GuiOpt.click_icon(url_pre + "jianying_dakai.png")
 GuiOpt.click_icon(url_pre + "jianying_qubianji.png")
 GuiOpt.click_icon(url_pre + "jianying_wenben.png")
 GuiOpt.click_icon(url_pre + "jianying_morenwenben.png")
 GuiOpt.click_icon(url_pre + "jianying_morenwenben_input.png")
 # 获取标题并复制到剪贴板
-title = GlobalVar.get("head_pic_title")
+if mode == "1":
+    title = GlobalVar.get("head_pic_title1")
+elif mode == "2":
+    title = GlobalVar.get("head_pic_title2")
+else:
+    print("unknow mode: " + mode)
+    exit(-1)
 if title is None:
     print("get title failed")
     exit(-1)
@@ -47,3 +53,20 @@ pyperclip.copy(title)
 GuiOpt.double_click_icon(url_pre + "jianying_morenwenben_input.png")
 GuiOpt.paste()
 GuiOpt.click_icon(url_pre + "jianying_wanchengshezhi.png")
+
+# 导入图片
+if CommonApi.get_os_type() == "win":
+    srcpath = GlobalVar.get("imgsavedir")
+    destpath = "C:\\Users\\Administrator\\Desktop\\temp_del"
+    if os.path.exists(destpath):
+        print("存在同名目录，正在删除: " + destpath)
+        CommonApi.remove_directory(destpath)
+    else:
+        os.mkdir(destpath)
+    CommonApi.copy_files(srcpath, destpath)
+    GuiOpt.click_icon(url_pre + "jianying_daoru.png")
+    GuiOpt.click_icon(url_pre + "jianying_zhuomian.png")
+    GuiOpt.double_click_icon(url_pre + "jianying_temp_del.png")
+    GuiOpt.select_all()
+    GuiOpt.click_icon(url_pre + "jianying_dakai2.png")
+

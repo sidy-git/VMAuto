@@ -40,5 +40,6 @@ if context is not None:
     print("视频生成中........")
     GuiOpt.wait_disappear(url_pre + "jianying_shengchengzhong.png", 120)
     print("视频生成成功")
+    time.sleep(3)
 else:
     print("获取视频文案失败")

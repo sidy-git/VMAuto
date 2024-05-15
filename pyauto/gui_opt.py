@@ -17,6 +17,16 @@ class GuiOpt:
         time.sleep(1)
 
     @staticmethod
+    def move_to(x, y):
+        pyautogui.moveTo(x, y)
+        time.sleep(1)
+
+    @staticmethod
+    def click_pos(x, y):
+        pyautogui.click(x, y)
+        time.sleep(1)
+
+    @staticmethod
     def double_click_icon(icon_path):
         x, y = pyautogui.locateCenterOnScreen(icon_path, confidence=0.7)
         pyautogui.moveTo(x, y)
@@ -26,9 +36,16 @@ class GuiOpt:
 
     @staticmethod
     def find_icon(icon_path):
-        x, y = pyautogui.locateCenterOnScreen(icon_path, confidence=0.7)
+        x = None
+        y = None
+        try:
+            x, y = pyautogui.locateCenterOnScreen(icon_path, confidence=0.7)
+        except pyautogui.ImageNotFoundException:
+            print("can not find icon: " + icon_path)
+            return False
         print("x=" + str(x) + ", y=" + str(y))
         pyautogui.moveTo(x, y)
+        return True
 
     @staticmethod
     def input(string):
@@ -48,6 +65,35 @@ class GuiOpt:
             pyautogui.hotkey('ctrl', 'a')
         else:
             pyautogui.hotkey('command', 'a')
+
+    @staticmethod
+    def desktop():
+        if CommonApi.get_os_type() == "win":
+            pyautogui.hotkey('win', 'd')
+        else:
+            pyautogui.hotkey('command', 'd')
+
+    @staticmethod
+    def windows_max():
+        if CommonApi.get_os_type() == "win":
+            pyautogui.hotkey('win', 'up')
+        else:
+            pyautogui.hotkey('command', 'up')
+
+    @staticmethod
+    def enter():
+        if CommonApi.get_os_type() == "win":
+            pyautogui.press('enter')
+        else:
+            pyautogui.press('enter')
+
+    @staticmethod
+    def esc():
+        if CommonApi.get_os_type() == "win":
+            pyautogui.press('esc')
+        else:
+            pyautogui.press('esc')
+        time.sleep(1)
 
     @staticmethod
     def wait_appear(icon_path, max_sec):

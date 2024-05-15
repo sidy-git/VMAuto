@@ -41,14 +41,14 @@ GuiOpt.click_icon(url_pre + "jianying_morenwenben_input.png")
 if mode == "1":
     title = GlobalVar.get("head_pic_title1")
 elif mode == "2":
-    title = GlobalVar.get("head_pic_title2")
+    title = GlobalVar.get("head_pic_title2") + "\r\n信息差"
 else:
     print("unknow mode: " + mode)
     exit(-1)
 if title is None:
     print("get title failed")
     exit(-1)
-title = time.strftime("%m月%d日", time.localtime()) + "\r\n" + title
+# title = time.strftime("%m月%d日", time.localtime()) + "\r\n" + title
 pyperclip.copy(title)
 GuiOpt.double_click_icon(url_pre + "jianying_morenwenben_input.png")
 GuiOpt.paste()

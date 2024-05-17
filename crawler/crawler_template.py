@@ -50,6 +50,13 @@ class CrawlerBase:
         # 打印表格
         print(table)
 
+    def get_text(self):
+        ret = ""
+        for item in self.itemList:
+            lint = str(item.id) + " " + item.title + " " + item.link + "\r\n"
+            ret = ret + lint
+        return ret
+
     def get_detail(self, detail_url):
         print("获取信息详情, url:", detail_url)
         response = requests.get(detail_url)

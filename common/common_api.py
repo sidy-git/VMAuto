@@ -1,6 +1,9 @@
 import os
 import platform
+import random
 import shutil
+
+from common.global_var import GlobalVar
 
 
 class CommonApi:
@@ -35,3 +38,11 @@ class CommonApi:
             print("目录删除成功")
         except OSError as e:
             print("目录删除失败：", e)
+
+    @staticmethod
+    def generate_captcha(length=4):
+        captcha = ''
+        for _ in range(4):
+            captcha += str(random.randint(0, 9))
+        return captcha
+

@@ -11,6 +11,7 @@ from digital_zol_gap import DigitalZolGap
 from digital_ithome_gap import DigitalIthomeGap
 from crawler_template import CrawlerBase
 from common.global_var import GlobalVar
+from monitor.wechat_im import WechatIm
 from output_manager import XmlOutput
 
 
@@ -35,6 +36,9 @@ def collect_list():
     XmlOutput.write_to_xml(CrawlerBase.itemList)
     CrawlerBase().printList()
     XmlOutput.save_to_file()
+    if GlobalVar.get("inputSrc") == "wechat":
+        WechatIm.send_msg(CrawlerBase().get_text())
+
 
 def make_img_save_dir():
     imgfile = GlobalVar.get("imgDir")
@@ -59,7 +63,11 @@ def make_img_save_dir():
 def get_detail_download_img():
     # 选择选材
     print("请输入选材序号（序号中间用空格分隔）: ")
-    input_index = input()
+    input_index: str
+    if GlobalVar.get("inputsrc") == "wechat":
+        input_index = WechatIm.wait_msg()
+    else:
+        input_index = input()
     print("选择素材序号: ", input_index)
     indexs = str(input_index).split()
     temp_context = None

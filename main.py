@@ -14,13 +14,19 @@ from common.common_api import CommonApi
 if __name__ == '__main__':
     if len(sys.argv) == 1:
         manu_model.manu_run()
-    elif len(sys.argv) == 2:
+    elif len(sys.argv) >= 2:
         os_type = CommonApi.get_os_type()
         path_separator = '/'
         if os_type == 'win':
             path_separator = '\\'
         file_dir = os.path.dirname(os.path.abspath(__file__))
+        cmd_line = file_dir + path_separator + "config" + path_separator + os_type + path_separator + sys.argv[1]
 
-        auto_model.auto_run(file_dir + path_separator + "config" + path_separator + os_type + path_separator + sys.argv[1])
+        i = 2
+        args = []
+        while i < len(sys.argv):
+            args.append(sys.argv[i])
+            i += 1
+        auto_model.auto_run(cmd_line, args)
     else:
         print("argument error!")

@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import time
 import pyautogui
+import pyperclip
 
 from common.common_api import CommonApi
 
@@ -27,6 +28,11 @@ class GuiOpt:
         time.sleep(1)
 
     @staticmethod
+    def double_click_pos(x, y):
+        pyautogui.doubleClick(x, y)
+        time.sleep(1)
+
+    @staticmethod
     def double_click_icon(icon_path):
         x, y = pyautogui.locateCenterOnScreen(icon_path, confidence=0.7)
         pyautogui.moveTo(x, y)
@@ -43,14 +49,45 @@ class GuiOpt:
         except pyautogui.ImageNotFoundException:
             print("can not find icon: " + icon_path)
             return False
-        print("x=" + str(x) + ", y=" + str(y))
+        print("find icon: " + icon_path + " x=" + str(x) + ", y=" + str(y))
         pyautogui.moveTo(x, y)
         return True
+
+    @staticmethod
+    def get_icon_pos(icon_path):
+        x = None
+        y = None
+        try:
+            x, y = pyautogui.locateCenterOnScreen(icon_path, confidence=0.7)
+        except pyautogui.ImageNotFoundException:
+            print("can not find icon: " + icon_path)
+            return None, None
+        print("get icon: " + icon_path + " x=" + str(x) + ", y=" + str(y))
+        pyautogui.moveTo(x, y)
+        return x, y
 
     @staticmethod
     def input(string):
         print("开始输入: " + string)
         pyautogui.typewrite(string)
+
+    @staticmethod
+    def copy(context=None):
+        if context is None:
+            if CommonApi.get_os_type() == "win":
+                pyautogui.hotkey('ctrl', 'c')
+            else:
+                pyautogui.hotkey('command', 'c')
+        else:
+            pyperclip.copy(context)
+
+    @staticmethod
+    def read_clipboard():
+        return pyperclip.paste()
+
+    @staticmethod
+    def clear_clipboard():
+        pyperclip.copy("")
 
     @staticmethod
     def paste():
@@ -96,7 +133,7 @@ class GuiOpt:
         time.sleep(1)
 
     @staticmethod
-    def wait_appear(icon_path, max_sec):
+    def wait_appear(icon_path, max_sec=10):
         # 统计频度
         range_sec = 5
         sec = range_sec
@@ -113,7 +150,7 @@ class GuiOpt:
                 time.sleep(range_sec)
                 sec += range_sec
             if location is not None:
-                print("图片出现, 位置: " + str(location.left) + ", " + str(location.top))
+                print("图片出现: " + icon_path + ", 位置: " + str(location.left) + ", " + str(location.top))
                 break
         return True
 

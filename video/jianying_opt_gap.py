@@ -5,6 +5,7 @@ import sys
 import time
 
 from common.common_api import CommonApi
+from common.config_reader import ConfigReader
 from monitor.wechat_im import WechatIm
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -21,9 +22,12 @@ def add_url(file):
 context = GlobalVar.get("final_context")
 if context is not None:
     print("生成视频文案: " + context)
-    if GlobalVar.get("inputsrc") == "wechat":
-        WechatIm.send_msg(context)
+    if ConfigReader.get("config", "inputsrc") == "wechat":
+        tempContext = GuiOpt.read_clipboard()
+        if tempContext is not None and tempContext != "":
+            WechatIm.send_msg(tempContext)
         context = WechatIm.wait_msg()
+        GlobalVar.add("final_context", context)
     GuiOpt.copy(context)
 
 # 启动剪映
@@ -40,7 +44,7 @@ if not GuiOpt.find_icon(add_url("jianying_ziyoubianjiwenan.png")):
     print(">>>>请确认文案是否需要修改，不需要修改请按<enter>，需要请在剪映中修改后继续")
     print(">>>>如需中断当前操作，请输入<N>")
     input_value = ""
-    if not GlobalVar.get("inputsrc") == "wechat":
+    if not ConfigReader.get("config", "inputsrc") == "wechat":
         input_value = input()
         GuiOpt.click_icon(add_url("jianying_icon.png"))
         # 兼容windows处理

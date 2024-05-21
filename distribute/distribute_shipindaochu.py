@@ -1,5 +1,7 @@
 import time
 import pyperclip
+
+from common.config_reader import ConfigReader
 from common.global_var import GlobalVar
 from pyauto.gui_opt import GuiOpt
 from common.common_api import CommonApi
@@ -12,7 +14,7 @@ def add_url(file):
 
 # 导出视频
 print(">>>>开始进行视频剪辑，如剪辑完成，按<enter>进行视频导出及后续步骤")
-if not GlobalVar.get("inputsrc") == "wechat":
+if not ConfigReader.get("config", "inputsrc") == "wechat":
     input()
 GuiOpt.click_icon(add_url("jianying_icon.png"))
 GuiOpt.click_icon(add_url("jianying_daochu.png"))

@@ -4,6 +4,8 @@ import configparser
 import datetime
 import os
 import sys
+
+from common.config_reader import ConfigReader
 from common.global_var import GlobalVar
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
@@ -15,10 +17,10 @@ def auto_run(cfg_file, args):
     while i < len(args):
         print("arg[" + str(i) + "]: " + str(args[i]))
         i += 1
-    config = configparser.ConfigParser()
-    config.read(cfg_file, encoding="utf-8")
+    GlobalVar.add("config", cfg_file)
+    ConfigReader.init(cfg_file)
 
-    theme = config.get('info', 'theme')
+    theme = ConfigReader.get('info', 'theme')
     print("主题: ", theme)
     # 判断用上午还是下午模式
     # 获取当前时间
@@ -31,15 +33,15 @@ def auto_run(cfg_file, args):
         GlobalVar.add("mode", 2)
 
     # 开始脚本执行
-    scriptconfigs = config.options("scripts")
+    scriptconfigs = ConfigReader.get_options("scripts")
     print("-------------------------------------")
     for option in scriptconfigs:
-        item = config.get("scripts", option).split(",")
+        item = ConfigReader.get("scripts", option).split(",")
         print(option + ": " + item[0])
     print(">>>>请输入需要执行的步骤id：（支持格式：'1,3' 或 '1-3', 直接<enter>则默认全部执行）")
     inputs = []
     input_str: str
-    if GlobalVar.get("inputsrc") == "wechat":
+    if ConfigReader.get("config", "inputsrc") == "wechat":
         input_str = ""
     else:
         input_str = input()
@@ -61,7 +63,7 @@ def auto_run(cfg_file, args):
             inputs.append(i)
 
     for option in scriptconfigs:
-        item = config.get("scripts", option).split(",")
+        item = ConfigReader.get("scripts", option).split(",")
         script_name = item[0]
         script_path = item[1]
         if option in inputs:

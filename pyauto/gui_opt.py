@@ -1,5 +1,8 @@
 # -*- coding: utf-8 -*-
 import time
+
+import cv2
+import numpy as np
 import pyautogui
 import pyperclip
 
@@ -11,6 +14,7 @@ class GuiOpt:
 
     @staticmethod
     def click_icon(icon_path):
+        print("icon_path: " + icon_path)
         x, y = pyautogui.locateCenterOnScreen(icon_path, confidence=0.7)
         pyautogui.moveTo(x,y)
         time.sleep(1)
@@ -25,6 +29,11 @@ class GuiOpt:
     @staticmethod
     def click_pos(x, y):
         pyautogui.click(x, y)
+        time.sleep(1)
+
+    @staticmethod
+    def r_click_pos(x, y):
+        pyautogui.rightClick(x, y)
         time.sleep(1)
 
     @staticmethod
@@ -177,6 +186,15 @@ class GuiOpt:
                 print("wait time: " + str(sec) + " seconds")
                 sec += range_sec
 
+    @staticmethod
+    def save_screenshot(save_dir, x1=0, y1=0, x2=1902, y2=1080):
+        img = pyautogui.screenshot(region=[x1, y1, x2, y2])
+        # img = cv2.cvtColor(np.array(img), cv2.COLOR_RGB2BGR)
+        img.save(save_dir)
+        # cv2.imshow("截屏", img)
+        # cv2.waitKey(0)
+
+
 # GuiOpt.click_icon("jianying_icon.png")
 # time.sleep(3)
 # GuiOpt.find_icon("jianying_shengchengshipin.png")
@@ -188,4 +206,4 @@ class GuiOpt:
 
 # time.sleep(5)
 # GuiOpt.wait_disappear("test_wait.png", 20)
-
+# GuiOpt.screenshot("C:\\Users\\Administrator\\Videos\\temp_export_video\\screenshot.png")

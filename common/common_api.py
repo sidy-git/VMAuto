@@ -32,6 +32,12 @@ class CommonApi:
                 print(f"Copied {source_file} to {destination_folder}")
 
     @staticmethod
+    def copy_file(source_file, destination_file):
+        if os.path.isfile(source_file):
+            shutil.copy2(source_file, destination_file)
+            print(f"Copied {source_file} to {destination_file}")
+
+    @staticmethod
     def remove_directory(directory):
         try:
             shutil.rmtree(directory)
@@ -39,6 +45,7 @@ class CommonApi:
         except OSError as e:
             print("目录删除失败：", e)
 
+    # 随机生成验证码
     @staticmethod
     def generate_captcha(length=4):
         captcha = ''

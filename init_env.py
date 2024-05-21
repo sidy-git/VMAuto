@@ -1,6 +1,8 @@
 import os
+import time
 
 from common.common_api import CommonApi
+from monitor.wechat_im import WechatIm
 from pyauto.gui_opt import GuiOpt
 
 
@@ -13,6 +15,13 @@ def add_url(file):
 curPath = os.path.dirname(os.path.abspath(__file__))
 print("curPath: " + curPath)
 ret = os.system("set path=%path%;" + curPath)
+
+# 恢复小豆芽界面状态
+GuiOpt.desktop()
+GuiOpt.double_click_icon(add_url("xiaodouya_icon.png"))
+time.sleep(2)
+if GuiOpt.find_icon(add_url("xiaodouya_fabujilu.png")):
+    GuiOpt.click_icon(add_url("xiaodouya_fabujilu.png"))
 
 # 恢复剪映界面状态
 GuiOpt.click_icon(add_url("jianying_icon.png"))

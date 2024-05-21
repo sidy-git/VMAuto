@@ -2,6 +2,8 @@ import os
 import time
 
 import pyperclip
+
+from common.config_reader import ConfigReader
 from crawler_template import CrawlerBase
 from digital_geekpark_gap import DigitalGeekparkGap
 from digital_ifeng_gap import DigitaliFengGap
@@ -36,12 +38,12 @@ def collect_list():
     XmlOutput.write_to_xml(CrawlerBase.itemList)
     CrawlerBase().printList()
     XmlOutput.save_to_file()
-    if GlobalVar.get("inputSrc") == "wechat":
+    if ConfigReader.get("config", "inputSrc") == "wechat":
         WechatIm.send_msg(CrawlerBase().get_text())
 
 
 def make_img_save_dir():
-    imgfile = GlobalVar.get("imgDir")
+    imgfile = ConfigReader.get("path", "imgDir")
     if imgfile is None:
         print("get img file from global var failed")
         exit(-1)
@@ -64,7 +66,7 @@ def get_detail_download_img():
     # 选择选材
     print("请输入选材序号（序号中间用空格分隔）: ")
     input_index: str
-    if GlobalVar.get("inputsrc") == "wechat":
+    if ConfigReader.get("config", "inputsrc") == "wechat":
         input_index = WechatIm.wait_msg()
     else:
         input_index = input()

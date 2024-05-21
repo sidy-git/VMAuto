@@ -67,13 +67,19 @@ def run():
             print("文本优化失败")
         else:
             GlobalVar.add("opt_context" + str(i), context)
-            total_txt += chnIndex[i] + "、 " + context
+            if mode == 1:
+                total_txt += context + "\r\n"
+            else:
+                total_txt += chnIndex[i] + "、 " + context + "\r\n"
             print("优化后文本：" + context)
         i += 1
         option = "context" + str(i)
 
     # 增加头部和尾部文案
-    headtxt = time.strftime("%Y年%m月%d日", time.localtime()) + "科技资讯\r\n"
+    if mode == 1:
+        headtxt = time.strftime("%Y年%m月%d日", time.localtime()) + "科技快讯\r\n"
+    else:
+        headtxt = time.strftime("%Y年%m月%d日", time.localtime()) + "科技资讯\r\n"
     # tailtxt = "了解更多科技资讯，欢迎关注，一键三连"
     # total_txt = headtxt + total_txt + tailtxt
     total_txt = headtxt + total_txt

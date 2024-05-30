@@ -5,8 +5,11 @@ import datetime
 import os
 import sys
 
+from common.common_api import CommonApi
 from common.config_reader import ConfigReader
 from common.global_var import GlobalVar
+from common.log import Log
+
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 
@@ -19,6 +22,11 @@ def auto_run(cfg_file, args):
         i += 1
     GlobalVar.add("config", cfg_file)
     ConfigReader.init(cfg_file)
+    # 设置微信监控开关
+    if len(args) > 0 and str(args[0]) == "auto":
+        GlobalVar.add("inputSrc", "wechat")
+    else:
+        GlobalVar.add("inputSrc", "terminal")
 
     theme = ConfigReader.get('info', 'theme')
     print("主题: ", theme)
@@ -41,7 +49,7 @@ def auto_run(cfg_file, args):
     print(">>>>请输入需要执行的步骤id：（支持格式：'1,3' 或 '1-3', 直接<enter>则默认全部执行）")
     inputs = []
     input_str: str
-    if ConfigReader.get("config", "inputsrc") == "wechat":
+    if GlobalVar.get("inputSrc") == "wechat":
         input_str = ""
     else:
         input_str = input()
@@ -67,13 +75,12 @@ def auto_run(cfg_file, args):
         script_name = item[0]
         script_path = item[1]
         if option in inputs:
-            print("开始运行 " + option + ": " + script_name)
+            Log.info("开始运行 " + option + ": " + script_name)
             ret = os.system("python " + script_path)
             if ret == 0:
-                print("完成" + script_name)
+                Log.info("完成" + script_name)
             else:
-                print("执行" + script_name + "失败，返回：" + str(ret))
+                Log.info("执行" + script_name + "失败，返回：" + str(ret))
                 break
         else:
-            print("跳过 " + option + ": " + script_name)
-
+            Log.info("跳过 " + option + ": " + script_name)

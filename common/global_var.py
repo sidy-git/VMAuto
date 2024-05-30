@@ -7,6 +7,8 @@ class GlobalVar:
     file = "C:\\Users\\Administrator\\PycharmProjects\\VMAuto\\output\\global_var.ini"
     default_session = "global"
     init_flag = False
+    str_enter = "<ent>"
+    str_space = "<spa>"
 
     config = configparser.ConfigParser()
 
@@ -29,7 +31,7 @@ class GlobalVar:
             GlobalVar.config.add_section(GlobalVar.default_session)
         if type(value) != str:
             value = str(value)
-        temp_value = value.replace(" ", "").replace("\r", "").replace("\n", "").replace("%", "%%")
+        temp_value = value.replace(" ", GlobalVar.str_space).replace("\r\n", GlobalVar.str_enter).replace("%", "%%")
         GlobalVar.config.set(GlobalVar.default_session, key, temp_value)
         GlobalVar.config.write(open(GlobalVar.file, "w", encoding="utf-8"))
 
@@ -38,6 +40,7 @@ class GlobalVar:
         GlobalVar.init()
         if GlobalVar.config.has_option(GlobalVar.default_session, key):
             temp = str(GlobalVar.config.get(GlobalVar.default_session, key))
+            temp = temp.replace(GlobalVar.str_space, " ").replace(GlobalVar.str_enter, "\r\n")
             return temp
         else:
             return None
@@ -68,7 +71,7 @@ class GlobalVar:
 
 
 # print(GlobalVar.get("context1"))
-print(GlobalVar.get("imgsavedir"))
+# print(GlobalVar.get("imgsavedir"))
 # GlobalVar.clear_all("context")
 # print(GlobalVar.get("context1"))
 # GlobalVar.add_more("context", "context1")

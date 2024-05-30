@@ -6,6 +6,11 @@ import time
 
 import pyperclip
 import requests
+
+from common.config_reader import ConfigReader
+from common.log import Log
+from monitor.wechat_im import WechatIm
+
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from common.global_var import GlobalVar
 
@@ -31,7 +36,8 @@ chnIndex = ["零", "一", "二", "三", "四", "五", "六", "七", "八", "九"
 opts = [
     # OptConfig("口语化", "https://ppwx-helpseller-gm2.jd.com/text/nlp", "Chatrhino", "请将以下内容用较为口语化的风格进行重写："),
     OptConfig("新闻稿", "https://ppwx-helpseller-gm2.jd.com/text/nlp", "Chatrhino", "请将以下内容用新闻稿的风格进行重写："),
-    OptConfig("新闻稿缩写", "https://ppwx-helpseller-gm2.jd.com/text/nlp", "Chatrhino", "请以新闻稿的风格提取以下内容的核心信息，并控制在300个字以内：")
+    OptConfig("新闻稿缩写", "https://ppwx-helpseller-gm2.jd.com/text/nlp", "Chatrhino", "请以新闻稿的风格提取以下内容的核心信息，并控制在300个字以内："),
+    OptConfig("关键词提取", "https://ppwx-helpseller-gm2.jd.com/text/nlp", "Chatrhino", "请从以下内容中提炼出5个关键词")
 ]
 
 
@@ -51,6 +57,7 @@ def post_json(url, body):
 def run():
     i = 1
     total_txt = ""
+    keywords = ""
     option = "context" + str(i)
     GlobalVar.clear_all("opt_context")
     mode = int(GlobalVar.get("mode"))
@@ -62,16 +69,19 @@ def run():
         print("开始文本优化:" + opt.key)
         temp_context = opt.prompts + context
         json_data = json.dumps({"model": opt.model, "userSend": temp_context})
-        context = post_json(opt.url, json_data)
-        if context is None:
-            print("文本优化失败")
+        opt_context = post_json(opt.url, json_data)
+        if opt_context is None or opt_context == "":
+            Log.info("文本优化失败，使用原文本")
+            opt_context = context
         else:
-            GlobalVar.add("opt_context" + str(i), context)
-            if mode == 1:
-                total_txt += context + "\r\n"
-            else:
-                total_txt += chnIndex[i] + "、 " + context + "\r\n"
-            print("优化后文本：" + context)
+            print("优化后文本：" + opt_context)
+
+        GlobalVar.add("opt_context" + str(i), opt_context)
+        if mode == 1:
+            total_txt += opt_context + "\r\n"
+        else:
+            total_txt += chnIndex[i] + "、 " + opt_context + "\r\n"
+
         i += 1
         option = "context" + str(i)
 
@@ -83,11 +93,68 @@ def run():
     # tailtxt = "了解更多科技资讯，欢迎关注，一键三连"
     # total_txt = headtxt + total_txt + tailtxt
     total_txt = headtxt + total_txt
-    print("优化后文本：" + total_txt)
-    pyperclip.copy(total_txt)
+    print("优化后视频文本：" + total_txt)
     GlobalVar.add("final_context", total_txt)
-    print("-----------------------------------------------------------------")
-    print("以上内容已复制到剪贴板，可直接粘贴")
+    # pyperclip.copy(total_txt)
+    # print("-----------------------------------------------------------------")
+    # print("以上内容已复制到剪贴板，可直接粘贴")
+
+    # 确认视频文案
+    if GlobalVar.get("inputSrc") == "wechat":
+        WechatIm.send_msg_without_code(total_txt)
+        WechatIm.send_msg("请确认视频文案，需要修改则发送新文案，否则回复验证码或<否>")
+        response = WechatIm.wait_msg()
+        if response is not None and response != "" and response != "否":
+            total_txt = response
+        GlobalVar.add("final_context", total_txt)
+        print("视频文案更新为:" + total_txt)
+
+    # 输入关键词
+    if GlobalVar.get("inputSrc") == "wechat":
+        WechatIm.send_msg("请输入分发关键词: （格式：关键词1 关键词2...）")
+        keywords = WechatIm.wait_msg()
+        keywords = "#" + keywords.replace(" ", " #")
+    else:
+        print(">>>>请输入分发关键词: （格式：#关键词1 #关键词2...），如复用之前关键词，请直接<enter>")
+        keywords = input()
+        print("输入：" + keywords)
+    if keywords is not None and keywords != "":
+        GlobalVar.add("keywords", keywords)
+    else:
+        keywords = GlobalVar.get("keywords")
+
+    # 确认标题和描述是否需要修改
+    title = None
+    mode = GlobalVar.get("mode")
+    if mode == "1":
+        title = time.strftime("%Y年%m月%d日科技快讯", time.localtime())
+    elif mode == "2":
+        title = time.strftime("%Y年%m月%d日科技信息差", time.localtime())
+    else:
+        print("unknown mode: " + mode)
+        exit(-1)
+    desp = title
+    if GlobalVar.get("inputSrc") == "wechat":
+        send_msg = "标题: " + title + "\r\n请确认标题是否需要修改，需要修改则发送新标题，否则回复验证码或<否>"
+        WechatIm.send_msg(send_msg)
+        response = WechatIm.wait_msg()
+        if response != "" and response != "否":
+            title = response
+            print("标题修改成功: " + title)
+            desp = desp + "：" + title
+    GlobalVar.add("title", title)
+
+    if keywords is not None:
+        desp = desp + " " + keywords
+    if GlobalVar.get("inputSrc") == "wechat":
+        send_msg = "描述: " + desp + "\r\n请确认描述是否需要修改，需要修改则发送新描述，否则回复验证码或<否>"
+        WechatIm.send_msg(send_msg)
+        response = WechatIm.wait_msg()
+        if response != "" and response != "否":
+            desp = response
+
+            print("描述修改成功: " + desp)
+    GlobalVar.add("description", desp)
 
 
 run()

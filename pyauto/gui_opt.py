@@ -1,8 +1,5 @@
 # -*- coding: utf-8 -*-
 import time
-
-import cv2
-import numpy as np
 import pyautogui
 import pyperclip
 
@@ -14,7 +11,7 @@ class GuiOpt:
 
     @staticmethod
     def click_icon(icon_path):
-        print("icon_path: " + icon_path)
+        # print("icon_path: " + icon_path)
         x, y = pyautogui.locateCenterOnScreen(icon_path, confidence=0.7)
         pyautogui.moveTo(x,y)
         time.sleep(1)
@@ -58,7 +55,7 @@ class GuiOpt:
         except pyautogui.ImageNotFoundException:
             print("can not find icon: " + icon_path)
             return False
-        print("find icon: " + icon_path + " x=" + str(x) + ", y=" + str(y))
+        # print("find icon: " + icon_path + " x=" + str(x) + ", y=" + str(y))
         pyautogui.moveTo(x, y)
         return True
 
@@ -71,7 +68,7 @@ class GuiOpt:
         except pyautogui.ImageNotFoundException:
             print("can not find icon: " + icon_path)
             return None, None
-        print("get icon: " + icon_path + " x=" + str(x) + ", y=" + str(y))
+        # print("get icon: " + icon_path + " x=" + str(x) + ", y=" + str(y))
         pyautogui.moveTo(x, y)
         return x, y
 
@@ -104,6 +101,10 @@ class GuiOpt:
             pyautogui.hotkey('ctrl', 'v')
         else:
             pyautogui.hotkey('command', 'v')
+
+    @staticmethod
+    def hot_key(*args: str):
+        pyautogui.hotkey(*args)
 
     @staticmethod
     def select_all():
@@ -191,8 +192,6 @@ class GuiOpt:
         img = pyautogui.screenshot(region=[x1, y1, x2, y2])
         # img = cv2.cvtColor(np.array(img), cv2.COLOR_RGB2BGR)
         img.save(save_dir)
-        # cv2.imshow("截屏", img)
-        # cv2.waitKey(0)
 
 
 # GuiOpt.click_icon("jianying_icon.png")

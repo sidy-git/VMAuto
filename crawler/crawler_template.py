@@ -32,6 +32,15 @@ class CrawlerBase:
             print('Failed to retrieve the webpage')
             self.soup = None
 
+    def get_list_no_encoding(self):
+        response = requests.get(self.url)
+        if response.status_code == 200:
+            self.soup = BeautifulSoup(response.text, 'html.parser')
+            # html列表解析由子类实现
+        else:
+            print('Failed to retrieve the webpage')
+            self.soup = None
+
     def addItem(self, psrc, ptitle, plink):
         item = StItem()
         item.set_attr(CrawlerBase.static_index, psrc, ptitle, plink)

@@ -3,8 +3,6 @@ import platform
 import random
 import shutil
 
-from common.global_var import GlobalVar
-
 
 class CommonApi:
     # 获取操作系统类型
@@ -52,4 +50,3 @@ class CommonApi:
         for _ in range(4):
             captcha += str(random.randint(0, 9))
         return captcha
-

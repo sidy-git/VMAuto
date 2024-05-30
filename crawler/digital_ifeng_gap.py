@@ -52,7 +52,7 @@ class DigitaliFengGap(CrawlerBase):
             imgIndex = 1
             for img in imgs:
                 if img.find("img"):
-                    pic_src = img.find("img").attrs["data-lazyload"]
+                    pic_src = img.find("img").attrs["src"]
                     if pic_src.find("?"):
                         pic_src = pic_src.split("?")[0]
                     if pic_src.find("https") < 0:
@@ -61,8 +61,11 @@ class DigitaliFengGap(CrawlerBase):
                     file_extension = os.path.splitext(pic_src)[1]
                     # print(pic_src)
                     save_path = imgdir + "/" + str(index) + "-" + str(imgIndex) + file_extension
-                    print("开始下载图片" + str(index) + "-" + str(imgIndex))
-                    urllib.request.urlretrieve(pic_src, save_path)
+                    print("开始下载图片" + str(index) + "-" + str(imgIndex) + " 图片地址: " + pic_src)
+                    try:
+                        urllib.request.urlretrieve(pic_src, save_path)
+                    except:
+                        print("图片下载失败")
                     imgIndex += 1
             # print(context)
             return context
@@ -74,4 +77,4 @@ class DigitaliFengGap(CrawlerBase):
 # instance = DigitaliFengGap("凤凰网", "https://tech.ifeng.com/")
 # instance.run()
 # instance.printList()
-# instance.get_detail_dl_img("https://tech.ifeng.com/c/8ZNkdXxZrsk", 1)
+# instance.get_detail_dl_img("https://tech.ifeng.com/c/8ZuGwlS3nTx", 1)

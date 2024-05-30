@@ -14,7 +14,7 @@ def add_url(file):
 
 # 导出视频
 print(">>>>开始进行视频剪辑，如剪辑完成，按<enter>进行视频导出及后续步骤")
-if not ConfigReader.get("config", "inputsrc") == "wechat":
+if not GlobalVar.get("inputSrc") == "wechat":
     input()
 GuiOpt.click_icon(add_url("jianying_icon.png"))
 GuiOpt.click_icon(add_url("jianying_daochu.png"))

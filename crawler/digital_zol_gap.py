@@ -2,6 +2,9 @@
 import os
 import urllib.request
 
+import requests
+from bs4 import BeautifulSoup
+
 from common.global_var import GlobalVar
 from crawler_template import CrawlerBase
 
@@ -12,8 +15,9 @@ class DigitalZolGap(CrawlerBase):
         self.set_attr(src, url)
 
     def run(self):
-        self.get_list()
+        self.get_list_no_encoding()
         if self.soup is not None:
+            print(self.soup)
             news = self.soup.find("div", id="list-v-1")
             items = news.select("ul")
             # 限制数量
@@ -21,7 +25,7 @@ class DigitalZolGap(CrawlerBase):
             for ul in items:
                 for li in ul:
                     if str(li).find("class=\"news-moudle_item\"") > 0:
-                        super().addItem(self.src, li.find("a").attrs["title"], "https:" + li.find("a").attrs["href"])
+                        super().addItem(self.src, li.find("a").text, "https:" + li.find("a").attrs["href"])
                         max_line -= 1
                     if max_line <= 0:
                         break

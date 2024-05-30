@@ -9,7 +9,9 @@ pip install pyautogui
 pip install opencv-python
 
 # 环境变量
-set PYTHONPATH=C:\Users\Administrator\PycharmProjects\VMAutobhhhhh
+set PYTHONPATH=C:\Users\Administrator\PycharmProjects\VMAuto
 
 # 命令执行
 python main.py digital_gap.ini
+
+python monitor/vmauto_server.py

@@ -1,6 +1,7 @@
 import time
 
 from common.common_api import CommonApi
+from common.config_reader import ConfigReader
 from common.global_var import GlobalVar
 from pyauto.gui_opt import GuiOpt
 
@@ -18,6 +19,7 @@ class WechatContactItem:
         self.name = p_name
         self.icon = p_icon
 
+
 class WechatIm:
     contact = [WechatContactItem("Cidy", add_url("head_cidy.png"))]
     name = "Cidy"
@@ -33,13 +35,17 @@ class WechatIm:
     @staticmethod
     def send_msg(context):
         verify_code = CommonApi.generate_captcha()
-        verify_str = "code:" + verify_code + "\r\n"
+        verify_str = verify_code + "\r\n"
         GlobalVar.add("verity_code", verify_code)
         context = verify_str + context
-        WechatIm.send_msg_with_code(context)
-
+        while len(context) >= 2000:
+            pos = context.rfind("\r\n", 0, 2000)
+            WechatIm.send_msg_without_code(context[:pos])
+            context = ">>>>接上\r\n" + context[pos + 2:]
+        WechatIm.send_msg_without_code(context)
+        # WechatIm.send_msg_without_code(context)
     @staticmethod
-    def send_msg_with_code(context):
+    def send_msg_without_code(context):
         if not GuiOpt.find_icon(add_url("wechat_menu.png")):
             GuiOpt.click_icon(add_url("wechat_icon.png"))
         GuiOpt.windows_max()
@@ -48,8 +54,17 @@ class WechatIm:
         GuiOpt.select_all()
         GuiOpt.paste()
         time.sleep(1)
-        GuiOpt.click_icon(add_url("wechat_bnt_fasong.png"))
-        GuiOpt.click_icon(add_url("wechat_icon.png"))
+        # GuiOpt.click_icon(add_url("wechat_bnt_fasong.png"))
+        GuiOpt.enter()
+
+    @staticmethod
+    def esc_wechat():
+        if GuiOpt.find_icon(add_url("wechat_menu.png")):
+            GuiOpt.click_icon(add_url("wechat_icon.png"))
+
+    @staticmethod
+    def send():
+        GuiOpt.hot_key("alt", "s")
 
     @staticmethod
     # 发送的视频截图只能放置到视频目录的temp_export_video目录下
@@ -93,15 +108,15 @@ class WechatIm:
             else:
                 print("获取微信icon失败")
                 exit(-1)
-            GuiOpt.windows_max()
-        else:
-            print("当前在微信界面")
+        # else:
+        #     print("当前在微信界面")
+        GuiOpt.windows_max()
         GuiOpt.click_icon(WechatIm.find_head_icon(WechatIm.name))
         x, y = GuiOpt.get_icon_pos(add_url("wechat_send_tool.png"))
         y = y - 45
         GuiOpt.double_click_pos(x, y)
         GuiOpt.copy()
-        GuiOpt.click_icon(add_url("wechat_icon.png"))
+        # GuiOpt.click_icon(add_url("wechat_icon.png"))
         return GuiOpt.read_clipboard()
 
     @staticmethod
@@ -122,12 +137,18 @@ class WechatIm:
                 print("获取微信输入：" + last_msg)
                 return last_msg
             elif len(last_msg) > 0:
-                print("验证码核对错误，继续等待... wait seconds: " + str(times))
-            else:
-                print("未收到新的微信输入内容")
+                temp_str = "验证码核对错误，继续等待... wait seconds: " + str(times)
+                if GlobalVar.get("inputSrc") == "wechat":
+                    WechatIm.send_msg_without_code(temp_str)
+                print(temp_str)
+            # else:
+            #     print("未收到新的微信输入内容")
             time.sleep(range)
             times += range
-        print("等待微信消息超时")
+        temp_str = "等待微信消息超时"
+        if GlobalVar.get("inputSrc") == "wechat":
+            WechatIm.send_msg_without_code(temp_str)
+        print(temp_str)
         exit(-1)
 
     @staticmethod
@@ -169,4 +190,3 @@ class WechatIm:
             times += range
         print("等待微信消息超时")
         exit(-1)
-

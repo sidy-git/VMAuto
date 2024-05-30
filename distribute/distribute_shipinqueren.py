@@ -13,10 +13,10 @@ def add_url(file):
     return url_pre + file
 
 
-if ConfigReader.get("config", "inputsrc") == "wechat":
+if GlobalVar.get("inputSrc") == "wechat":
     # 微信发送视频
     WechatIm.send_video(add_url("wechat_send_video2.png"))
-    WechatIm.send_msg("请确认是否直接使用该视频，是则回复<是>，否则回复<否>，并发送新视频替换发布视频")
+    WechatIm.send_msg("请确认是否直接使用该视频，如需更换回复<否>并发送新视频，否则回复验证码或<是>")
     response = WechatIm.wait_msg()
     if response == "否":
         # 等待接收新视频
